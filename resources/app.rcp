@@ -1,0 +1,185 @@
+#include "resource.h"
+
+DATA "code" ID 1 "code0001.bin"
+
+/* ---------------------------------------------------------------- menus */
+
+/* PilRC has no MENUBAR resource: a MENU with several PULLDOWNs is the bar,
+   and a FORM binds to it with MENUID. */
+
+MENU ID MenuBarId
+BEGIN
+    PULLDOWN "File"
+    BEGIN
+        MENUITEM "New Entry" NewEntryItemId
+        MENUITEM "Export CSV..." ExportItemId
+        MENUITEM "A1c..." A1cItemId
+    END
+
+    PULLDOWN "Entry"
+    BEGIN
+        MENUITEM "Edit..." EditEntryItemId
+        MENUITEM "Delete" DeleteEntryItemId
+    END
+
+    PULLDOWN "Remind"
+    BEGIN
+        MENUITEM "Set Reminder..." SetReminderItemId
+        MENUITEM "Cancel Reminder" CancelReminderItemId
+    END
+
+    PULLDOWN "Help"
+    BEGIN
+        MENUITEM "About Diapalm" AboutItemId
+    END
+END
+
+/* --------------------------------------------------------------- alerts */
+
+/* Button 0 is Delete: the destructive choice, so Cancel is the default. */
+ALERT ID DeleteAlertId DEFAULTBUTTON 1 CONFIRMATION
+BEGIN
+    TITLE "Delete Entry"
+    MESSAGE "Delete this entry?"
+    BUTTONS "Delete" "Cancel"
+END
+
+/* The lab value needs its own wording: the entry alert says "entry", which
+   reads as the diary entry behind it rather than the A1c row being deleted. */
+ALERT ID DeleteA1cAlertId DEFAULTBUTTON 1 CONFIRMATION
+BEGIN
+    TITLE "Delete A1c"
+    MESSAGE "Delete this lab A1c value?"
+    BUTTONS "Delete" "Cancel"
+END
+
+ALERT ID ErrorAlertId ERROR
+BEGIN
+    TITLE "Invalid Value"
+    MESSAGE "^1"
+    BUTTONS "OK"
+END
+
+ALERT ID NothingToSaveAlertId
+BEGIN
+    TITLE "Nothing to Save"
+    MESSAGE "Enter at least a blood sugar, insulin or carb value."
+    BUTTONS "OK"
+END
+
+ALERT ID AboutAlertId
+BEGIN
+    TITLE "About Diapalm"
+    MESSAGE "Diapalm for Palm OS 1.0.0. A diabetes diary: log blood sugar, insulin and carbs."
+    BUTTONS "OK"
+END
+
+ALERT ID ExportedAlertId
+BEGIN
+    TITLE "Export Complete"
+    MESSAGE "Rows written to 'Diapalm Export': ^1"
+    BUTTONS "OK"
+END
+
+ALERT ID ReminderSetAlertId
+BEGIN
+    TITLE "Reminder Set"
+    MESSAGE "Diapalm will remind you to log a reading."
+    BUTTONS "OK"
+END
+
+ALERT ID ReminderClearedAlertId
+BEGIN
+    TITLE "Reminder"
+    MESSAGE "The reminder was cancelled."
+    BUTTONS "OK"
+END
+
+ALERT ID NoSelectionAlertId
+BEGIN
+    TITLE "No Selection"
+    MESSAGE "Select an entry in the list first."
+    BUTTONS "OK"
+END
+
+/* "entry" would read as the diary entry on the A1c form, where the rows are
+   lab values. */
+ALERT ID NoA1cSelectionAlertId
+BEGIN
+    TITLE "No Selection"
+    MESSAGE "Select a lab A1c value in the list first."
+    BUTTONS "OK"
+END
+
+ALERT ID ExportFailedAlertId
+BEGIN
+    TITLE "Export Failed"
+    MESSAGE "Could not write the export database."
+    BUTTONS "OK"
+END
+
+ALERT ID ReminderFailedAlertId
+BEGIN
+    TITLE "Reminder"
+    MESSAGE "Could not set the reminder."
+    BUTTONS "OK"
+END
+
+/* --------------------------------------------------------------- forms */
+
+FORM ID ListFormId AT (0 0 160 160)
+    MENUID MenuBarId
+BEGIN
+    TITLE "Diapalm"
+    /* 118 tall, not the full 130: the A1c status line is drawn underneath. */
+    LIST "" ID ListFormListId AT (0 13 160 118) USABLE
+END
+
+FORM ID EditFormId AT (0 0 160 160)
+BEGIN
+    TITLE "Entry"
+
+    LABEL "Note:" ID EditFormNoteLabelId AT (2 16)
+    FIELD ID EditFormNoteId AT (4 25 152 34) MULTIPLELINES MAXCHARS 120
+
+    LABEL "When:" ID EditFormTimeLabelId AT (2 64)
+    BUTTON "Change" ID EditFormSetTimeButtonId AT (66 61 90 13)
+
+    LABEL "BG" ID EditFormBgLabelId AT (2 84) FONT 1
+    FIELD ID EditFormBgFieldId AT (24 82 34 12) SINGLELINE NUMERIC MAXCHARS 3
+
+    LABEL "Insulin" ID EditFormInsulinLabelId AT (62 84) FONT 1
+    FIELD ID EditFormInsulinFieldId AT (98 82 30 12) SINGLELINE NUMERIC MAXCHARS 4
+
+    LABEL "Carbs" ID EditFormCarbsLabelId AT (2 104) FONT 1
+    FIELD ID EditFormCarbsFieldId AT (40 102 34 12) SINGLELINE NUMERIC MAXCHARS 3
+
+    BUTTON "Cancel" ID EditFormCancelButtonId AT (2 144 44 14)
+    BUTTON "Delete" ID EditFormDeleteButtonId AT (52 144 44 14)
+    BUTTON "OK" ID EditFormOkButtonId AT (112 144 44 14)
+END
+
+/* The estimate and the newest lab value are drawn by the form rather than
+   placed as labels, because their text is computed when the form opens. The
+   two lines they occupy are left blank here: y 13-38 is drawn, the list starts
+   below at 40. */
+FORM ID A1cFormId AT (0 0 160 160)
+BEGIN
+    TITLE "A1c"
+
+    LIST "" ID A1cFormListId AT (0 40 160 62) USABLE
+
+    LABEL "Lab %:" ID A1cFormValueLabelId AT (2 108) FONT 1
+    FIELD ID A1cFormValueFieldId AT (40 106 34 12) SINGLELINE MAXCHARS 5
+
+    BUTTON "Date" ID A1cFormDateButtonId AT (78 106 80 13)
+
+    BUTTON "Add" ID A1cFormAddButtonId AT (2 128 50 14)
+    BUTTON "Delete" ID A1cFormDeleteButtonId AT (56 128 50 14)
+    BUTTON "Done" ID A1cFormDoneButtonId AT (110 128 48 14)
+END
+
+APPLICATIONICONNAME ID AppNameStrId "Diapalm"
+VERSION ID AppVersionId "1.0.0"
+STRING ID EmptyListStrId "No entries yet."
+STRING ID EmptyListHintStrId "Use File > New Entry"

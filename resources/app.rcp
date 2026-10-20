@@ -70,7 +70,7 @@ END
 ALERT ID AboutAlertId
 BEGIN
     TITLE "About Diapalm"
-    MESSAGE "Diapalm for Palm OS 1.0.0. A diabetes diary: log blood sugar, insulin and carbs."
+    MESSAGE "Diapalm for Palm OS 1.0.1. A diabetes diary: log blood sugar, insulin and carbs."
     BUTTONS "OK"
 END
 
@@ -180,6 +180,6 @@ BEGIN
 END
 
 APPLICATIONICONNAME ID AppNameStrId "Diapalm"
-VERSION ID AppVersionId "1.0.0"
+VERSION ID AppVersionId "1.0.1"
 STRING ID EmptyListStrId "No entries yet."
 STRING ID EmptyListHintStrId "Use File > New Entry"

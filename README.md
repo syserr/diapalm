@@ -114,7 +114,10 @@ launch.
 
 ## Run it
 
-Install `build/Diapalm.prc` on a device or in an emulator.
+Download `Diapalm.prc` from the
+[Releases page](https://github.com/syserr/diapalm/releases), or build it
+yourself (above) to get `build/Diapalm.prc`. Install it on a device or in an
+emulator.
 
 **CloudpilotEmu** (browser): open the web app, pick a 68K ROM such as Palm OS
 4.1 on a Palm m515, then drag the PRC onto the emulator window. It appears in

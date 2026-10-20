@@ -184,12 +184,46 @@ void DpEditOpen(UInt16 storageIndex) {
     FrmGotoForm(EditFormId);
 }
 
+/* The numeric fields are small for a finger or a worn stylus, and a tap on
+   their label does nothing by default. Treat a tap anywhere in the field's
+   row band, from the previous column to the next, as a tap on the field. */
+static Boolean EditFocusNearTap(FormType *formP, Int16 x, Int16 y) {
+    static const struct { UInt16 id; Int16 left; Int16 right; } zones[] = {
+        { EditFormBgFieldId,      0,  60 },
+        { EditFormInsulinFieldId, 60, 160 },
+        { EditFormCarbsFieldId,   0,  160 },
+    };
+    UInt16 i;
+
+    for (i = 0; i < sizeof(zones) / sizeof(zones[0]); i++) {
+        UInt16 idx = FrmGetObjectIndex(formP, zones[i].id);
+        RectangleType r;
+
+        FrmGetObjectBounds(formP, idx, &r);
+        if (RctPtInRectangle(x, y, &r)) return false; /* field handles it */
+
+        r.topLeft.x = zones[i].left;
+        r.extent.x = zones[i].right - zones[i].left;
+        r.topLeft.y -= 6;
+        r.extent.y += 12;
+        if (RctPtInRectangle(x, y, &r)) {
+            FrmSetFocus(formP, idx);
+            return true;
+        }
+    }
+    return false;
+}
+
 Boolean DpEditFormHandleEvent(EventPtr eventP) {
     switch (eventP->eType) {
         case frmOpenEvent:
             FrmDrawForm(FrmGetActiveForm());
             EditLoadForm(FrmGetActiveForm());
             return true;
+
+        case penDownEvent:
+            return EditFocusNearTap(FrmGetActiveForm(), eventP->screenX,
+                                    eventP->screenY);
 
         case ctlSelectEvent:
             switch (eventP->data.ctlSelect.controlID) {
